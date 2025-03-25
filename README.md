@@ -1,4 +1,4 @@
-# MailFaker.js for JavaScript
+# MailFaker.js
 <p align="center">
   <img src="logo.jpg">
 </p>
@@ -94,7 +94,7 @@ _Generate full email addresses_
 
 ```javascript
 mailFaker.fullAddress('female');    // e.g. 9792.krippner-nisa@lorem.de
-mailFaker.fullAddress('male');     // e.g. tiago_dies-8420@molestiae.americanexpress
+mailFaker.fullAddress('male');     // e.g. tiago_dies-8420@molestiae.com
 mailFaker.fullAddress();          // e.g. 2245.schirmer-michaela@dicta.net
 
 // mailFaker.fullAddress() is the same as mailFaker.fullAddress('random')
