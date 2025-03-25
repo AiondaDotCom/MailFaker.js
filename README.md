@@ -99,6 +99,9 @@ mailFaker.fullAddress();          // e.g. 2245.schirmer-michaela@dicta.net
 
 // mailFaker.fullAddress() is the same as mailFaker.fullAddress('random')
 ```
+## Author
+
+[Stephan Ferraro](https://github.com/ferraro) – Aionda GmbH
 
 ## License
 

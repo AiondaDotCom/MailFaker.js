@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MailFaker.js Tests</title>
+    <style>
+        body { font-family: sans-serif; padding: 2em; }
+        .pass { color: green; }
+        .fail { color: red; }
+        label { display: block; margin-top: 1em; }
+        input, select, button { padding: 0.5em; margin-top: 0.3em; }
+        #manual-output { margin-top: 2em; padding: 1em; border: 1px solid #ccc; background: #f9f9f9; }
+        hr { margin: 3em 0 2em; }
+    </style>
+</head>
+<body>
+
+<h1>MailFaker.js Test Suite</h1>
+<img src="logo.jpg" alt="MailFaker.js Logo">
+
+<script src="mailfaker.js"></script>
+<h2>🛠️ Manual Testing Form</h2>
+<form id="manual-form">
+    <label for="locale">Select locale:
+        <select id="locale">
+            <option value="en">English (en)</option>
+            <option value="de">German (de)</option>
+            <option value="fr">French (fr)</option>
+        </select>
+    </label>
+
+    <label for="method">Choose method:
+        <select id="method">
+            <option value="firstName">firstName()</option>
+            <option value="lastName">lastName()</option>
+            <option value="fullName">fullName()</option>
+            <option value="localPart">localPart()</option>
+            <option value="domainPart">domainPart()</option>
+            <option selected value="fullAddress">fullAddress()</option>
+        </select>
+    </label>
+
+    <button type="submit">Run</button>
+</form>
+
+<div id="manual-output"></div>
+<hr>
+<div id="results"></div>
+<script>
+    function assert(condition, message) {
+        var result = document.createElement('div');
+        result.className = condition ? 'pass' : 'fail';
+        result.textContent = (condition ? '✔️ ' : '❌ ') + message;
+        document.getElementById('results').appendChild(result);
+    }
+
+    function runTests() {
+        var locales = ['en', 'de', 'fr'];
+        var tldPattern = /\.(com|net|org|info|biz|io|co|xyz|online|site)$/;
+
+        locales.forEach(function(locale) {
+            var faker = new MailFaker(locale);
+
+            assert(faker instanceof MailFaker, 'MailFaker instance created for locale: ' + locale);
+
+            var first = faker.firstName();
+            assert(typeof first === 'string', 'firstName() returns a string');
+            assert(first.length > 0, 'firstName() returns a non-empty string');
+
+            var last = faker.lastName();
+            assert(typeof last === 'string', 'lastName() returns a string');
+            assert(last.length > 0, 'lastName() returns a non-empty string');
+
+            var full = faker.fullName();
+            assert(typeof full === 'string', 'fullName() returns a string');
+            assert(full.indexOf(' ') > -1, 'fullName() contains a space');
+
+            var local = faker.localPart();
+            assert(typeof local === 'string', 'localPart() returns a string');
+            assert(local.length > 0, 'localPart() returns a non-empty string');
+
+            var domain = faker.domainPart();
+            assert(typeof domain === 'string', 'domainPart() returns a string');
+            assert(domain.indexOf('.') > -1, 'domainPart() contains a dot');
+            assert(tldPattern.test(domain), 'domainPart() ends with a known TLD');
+
+            var email = faker.fullAddress();
+            assert(typeof email === 'string', 'fullAddress() returns a string');
+            assert(email.indexOf('@') > -1, 'fullAddress() contains @');
+            assert(tldPattern.test(email.split('@')[1]), 'fullAddress() has valid TLD');
+
+            var email2 = faker.fullAddress();
+            assert(email !== email2, 'fullAddress() is randomized');
+        });
+
+        // Default locale fallback
+        var fallback = new MailFaker('xx');
+        assert(fallback.locale === 'en', 'Unknown locale falls back to "en"');
+    }
+
+    runTests();
+</script>
+
+<script>
+    document.getElementById('manual-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const locale = document.getElementById('locale').value;
+        const method = document.getElementById('method').value;
+
+        const output = document.getElementById('manual-output');
+        output.innerHTML = '';
+
+        try {
+            const faker = new MailFaker(locale);
+            const result = faker[method]();
+
+            const resultDiv = document.createElement('div');
+            resultDiv.innerHTML = `<strong>${method}()</strong> → ${result}`;
+            output.appendChild(resultDiv);
+        } catch (err) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.color = 'red';
+            errorDiv.textContent = 'Error: ' + err.message;
+            output.appendChild(errorDiv);
+        }
+    });
+    // Trigger initial run on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('manual-form').dispatchEvent(new Event('submit'));
+    });
+</script>
+
+</body>
+</html>
